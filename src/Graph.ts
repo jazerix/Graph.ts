@@ -17,21 +17,30 @@ export class Graph implements ShouldUpdate {
     edges: Array<Edge> = [];
     connecting: Edge | null = null;
 
+    preventClick: boolean = false;
+    dragStartPosition: Position = null;
+    dragging: Vertex = null;
+
+    preventClickTime: number = 0;
+    clickDelay: number = 100;
 
     constructor(canvas: HTMLCanvasElement) {
         this.context = <CanvasRenderingContext2D>canvas.getContext("2d");
         this.canvas = canvas;
         canvas.addEventListener("click", (e) => this.handleClick(e))
         canvas.addEventListener("mousemove", (e) => this.handleHover(e));
+        canvas.addEventListener("mousedown", (e) => this.startDrag(e))
+        canvas.addEventListener("mouseup", (e) => this.endDrag(e));
+        canvas.addEventListener("dblclick", (e) => {
+            //console.log("db click");
+        })
         window.addEventListener("keydown", (e) => {
-            console.log(e.key);
             if (e.key === "Escape") {
                 this.connecting = null;
                 this.update();
             }
 
-        })
-        console.log("started");
+        });
     }
 
     update(): void {
@@ -46,17 +55,43 @@ export class Graph implements ShouldUpdate {
         }
     }
 
+    startDrag(e: MouseEvent) {
+        this.dragStartPosition = this.getMousePos(e);
+        this.dragging = this.vertexAt(this.dragStartPosition);
+        this.preventClickTime = Date.now();
+    }
+
+    endDrag(e: MouseEvent) {
+        let endPos: Position = this.getMousePos(e);
+        let threshold: number = 10;
+
+        if (this.dragging != null) {
+            this.preventClick = true;
+
+        }
+
+        this.dragging = null;
+    }
+
+    private isClickPrevented(): boolean {
+        if (this.preventClickTime == 0)
+            return true;
+        return Date.now() - this.preventClickTime > this.clickDelay;
+    }
+
     handleClick(e: MouseEvent) {
+        if (this.isClickPrevented())
+            return;
+
         var position = this.getMousePos(e);
         var clickedVertex = this.vertexAt(position);
-        if (clickedVertex == null) {
+        if (clickedVertex == null && this.connecting == null) {
             this.vertices.push(new Vertex(this, position));
         }
         else {
             if (this.connecting == null)
                 this.connecting = new Edge(clickedVertex);
-            else
-            {
+            else {
                 this.connecting.setEnd(clickedVertex);
                 this.edges.push(this.connecting);
                 this.connecting = null;
@@ -84,14 +119,23 @@ export class Graph implements ShouldUpdate {
 
 
     handleHover(e: MouseEvent): void {
+
+        let reDraw: boolean = false;
         let shouldChange = this.elementExistsAt(this.getMousePos(e));
         document.body.style.cursor = shouldChange ? "pointer" : "default";
 
-        if (this.connecting === null) {
-            return;
+        if (this.connecting !== null) {
+            this.connecting.setEnd(this.getMousePos(e));
+            reDraw = true;
         }
-        this.connecting.setEnd(this.getMousePos(e));
-        this.update();
+
+        if (this.dragging !== null && Date.now() - this.preventClickTime > this.clickDelay) {
+            this.dragging.position = this.getMousePos(e);
+            reDraw = true;
+        }
+
+        if (reDraw)
+            this.update();
     }
 
     private getMousePos(e: MouseEvent): Position {

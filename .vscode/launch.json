@@ -4,12 +4,18 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        {
-          "type": "firefox",
-          "request": "launch",
-          "name": "Debug with FireFox",
-          "url": "file:///C:/Users/jazer/code/g/graph.html",
-          "webRoot": "${workspaceFolder}"
-        }
-      ]
+      {
+        "type": "firefox",
+        "request": "launch",
+        "name": "Debug with FireFox",
+        "url": "file:///C:/Users/jazer/code/g/graph.html",
+        "webRoot": "${workspaceFolder}/dist",
+        "pathMappings": [
+          {
+            "url": "webpack://graph/src",
+            "path": "${workspaceFolder}/src"
+          }
+        ]
+      }
+    ]
 }
