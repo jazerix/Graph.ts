@@ -3,7 +3,12 @@ import { Vertex } from "./Vertex";
 import { Edge } from "./Edge";
 import { Position } from "./Position";
 
-export class Application implements ShouldUpdate {
+window.onload = () => {
+    var canvas = <HTMLCanvasElement>document.getElementById("d");
+    var app = new Graph(canvas);
+}
+
+export class Graph implements ShouldUpdate {
 
 
     context: CanvasRenderingContext2D;
@@ -26,6 +31,7 @@ export class Application implements ShouldUpdate {
             }
 
         })
+        console.log("started");
     }
 
     update(): void {
