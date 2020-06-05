@@ -6,4 +6,9 @@ export class Position {
         this.x = x;
         this.y = y;
     }
+
+    public compare(position: Position)
+    {
+        return this.x == position.x && this.y == position.y;
+    }
 }

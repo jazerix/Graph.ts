@@ -22,7 +22,7 @@ export class Graph implements ShouldUpdate {
     dragging: Vertex = null;
 
     preventClickTime: number = 0;
-    clickDelay: number = 100;
+    clickDelay: number = 125;
 
     constructor(canvas: HTMLCanvasElement) {
         this.context = <CanvasRenderingContext2D>canvas.getContext("2d");
@@ -32,7 +32,7 @@ export class Graph implements ShouldUpdate {
         canvas.addEventListener("mousedown", (e) => this.startDrag(e))
         canvas.addEventListener("mouseup", (e) => this.endDrag(e));
         canvas.addEventListener("dblclick", (e) => {
-            //console.log("db click");
+            console.log("db click");
         })
         window.addEventListener("keydown", (e) => {
             if (e.key === "Escape") {
@@ -62,25 +62,24 @@ export class Graph implements ShouldUpdate {
     }
 
     endDrag(e: MouseEvent) {
-        let endPos: Position = this.getMousePos(e);
-        let threshold: number = 10;
-
-        if (this.dragging != null) {
+        if (this.dragging != null) 
             this.preventClick = true;
-
-        }
 
         this.dragging = null;
     }
 
-    private isClickPrevented(): boolean {
+    private isClickPrevented(e: MouseEvent): boolean {
+        let mousePos = this.getMousePos(e);
         if (this.preventClickTime == 0)
             return true;
+        if (this.dragStartPosition != null && this.dragStartPosition.compare(mousePos))
+            return false;
+        
         return Date.now() - this.preventClickTime > this.clickDelay;
     }
 
     handleClick(e: MouseEvent) {
-        if (this.isClickPrevented())
+        if (this.isClickPrevented(e))
             return;
 
         var position = this.getMousePos(e);
