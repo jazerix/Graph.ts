@@ -6,6 +6,7 @@ export class Vertex {
     radius: number = 30;
     notifier: ShouldUpdate;
     position: Position;
+    selected: boolean = false;
 
     constructor(notifier: ShouldUpdate, position: Position) {
         this.notifier = notifier;
@@ -15,7 +16,7 @@ export class Vertex {
     draw(context: CanvasRenderingContext2D): void {
         context.beginPath();
         context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
-        context.fillStyle = '#fff';
+        context.fillStyle = this.selected ? '#D4FFDA' : '#fff';
         context.fill();
         context.lineWidth = 5;
         context.strokeStyle = "#000";

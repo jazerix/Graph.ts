@@ -2,20 +2,24 @@ import { ShouldUpdate } from "./ShouldUpdate";
 import { Vertex } from "./Vertex";
 import { Edge } from "./Edge";
 import { Position } from "./Position";
+import { Mode } from "./GraphMode";
 
 window.onload = () => {
     var canvas = <HTMLCanvasElement>document.getElementById("d");
     var app = new Graph(canvas);
+    document.getElementById("clear").addEventListener("click", (e) => app.clear());
+    document.getElementById("default").addEventListener("click", (e) => app.setMode(Mode.Default));
+    document.getElementById("create").addEventListener("click", (e) => app.setMode(Mode.Create));
 }
 
 export class Graph implements ShouldUpdate {
-
 
     context: CanvasRenderingContext2D;
     canvas: HTMLCanvasElement;
     vertices: Array<Vertex> = []
     edges: Array<Edge> = [];
     connecting: Edge | null = null;
+    selectedVertex: Vertex = null;
 
     preventClick: boolean = false;
     dragStartPosition: Position = null;
@@ -23,6 +27,7 @@ export class Graph implements ShouldUpdate {
 
     preventClickTime: number = 0;
     clickDelay: number = 125;
+    mode: Mode = Mode.Create;
 
     constructor(canvas: HTMLCanvasElement) {
         this.context = <CanvasRenderingContext2D>canvas.getContext("2d");
@@ -62,7 +67,7 @@ export class Graph implements ShouldUpdate {
     }
 
     endDrag(e: MouseEvent) {
-        if (this.dragging != null) 
+        if (this.dragging != null)
             this.preventClick = true;
 
         this.dragging = null;
@@ -74,7 +79,7 @@ export class Graph implements ShouldUpdate {
             return true;
         if (this.dragStartPosition != null && this.dragStartPosition.compare(mousePos))
             return false;
-        
+
         return Date.now() - this.preventClickTime > this.clickDelay;
     }
 
@@ -82,21 +87,47 @@ export class Graph implements ShouldUpdate {
         if (this.isClickPrevented(e))
             return;
 
-        var position = this.getMousePos(e);
-        var clickedVertex = this.vertexAt(position);
-        if (clickedVertex == null && this.connecting == null) {
-            this.vertices.push(new Vertex(this, position));
-        }
-        else {
-            if (this.connecting == null)
-                this.connecting = new Edge(clickedVertex);
-            else {
-                this.connecting.setEnd(clickedVertex);
-                this.edges.push(this.connecting);
-                this.connecting = null;
-            }
-        }
+        this.handleMode(this.getMousePos(e));
         this.update();
+    }
+
+    private handleMode(position: Position) {
+        let clickedVertex = this.vertexAt(position);
+
+        if (this.mode == Mode.Default) {
+            this.selectVertex(clickedVertex);
+            return;
+        }
+        else if (this.mode == Mode.Create) {
+            this.createVertices(clickedVertex, position);
+        }
+
+    }
+
+    private createVertices(vertex: Vertex, position: Position): void {
+        if (vertex == null && this.connecting == null) {
+            this.vertices.push(new Vertex(this, position));
+            return;
+        }
+        if (this.connecting == null)
+            this.connecting = new Edge(vertex);
+        else {
+            this.connecting.setEnd(vertex);
+            this.edges.push(this.connecting);
+            this.connecting = null;
+        }
+    }
+
+    private selectVertex(vertex: Vertex): void {
+        if (this.selectedVertex != null)
+            this.selectedVertex.selected = false;
+        if (this.selectedVertex == vertex || vertex == null) {
+            this.selectedVertex = null;
+            return;
+        }
+
+        vertex.selected = true;
+        this.selectedVertex = vertex;
     }
 
     private elementExistsAt(position: Position): boolean {
@@ -140,6 +171,16 @@ export class Graph implements ShouldUpdate {
     private getMousePos(e: MouseEvent): Position {
         var rect = this.canvas.getBoundingClientRect();
         return new Position(e.clientX - rect.left, e.clientY - rect.top);
+    }
+
+    public clear(): void {
+        this.edges = [];
+        this.vertices = [];
+        this.update();
+    }
+
+    public setMode(mode: Mode) {
+        this.mode = mode;
     }
 
 }
