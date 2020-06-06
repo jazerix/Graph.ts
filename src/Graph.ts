@@ -36,13 +36,12 @@ export class Graph implements ShouldUpdate {
         canvas.addEventListener("mousemove", (e) => this.handleHover(e));
         canvas.addEventListener("mousedown", (e) => this.startDrag(e))
         canvas.addEventListener("mouseup", (e) => this.endDrag(e));
-        canvas.addEventListener("dblclick", (e) => {
-            console.log("db click");
-        })
         window.addEventListener("keydown", (e) => {
             if (e.key === "Escape") {
                 this.connecting = null;
                 this.update();
+            } else if (e.key === "Delete") {
+                console.log("dasdasd");
             }
 
         });
@@ -50,13 +49,14 @@ export class Graph implements ShouldUpdate {
 
     update(): void {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        for (let edge of this.edges) {
-            edge.draw(this.context);
+
+        for (let item of this.vertices) {
+            item.draw(this.context);
         }
         if (this.connecting !== null)
             this.connecting.draw(this.context);
-        for (let item of this.vertices) {
-            item.draw(this.context);
+        for (let edge of this.edges) {
+            edge.draw(this.context);
         }
     }
 
@@ -128,6 +128,14 @@ export class Graph implements ShouldUpdate {
 
         vertex.selected = true;
         this.selectedVertex = vertex;
+    }
+
+    private deleteVertex(): void {
+        if (this.selectedVertex == null)
+            return;
+        for(let edge of this.edges) {
+
+        }
     }
 
     private elementExistsAt(position: Position): boolean {
