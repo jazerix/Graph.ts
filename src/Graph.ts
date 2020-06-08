@@ -7,9 +7,9 @@ import { Mode } from "./GraphMode";
 window.onload = () => {
     var canvas = <HTMLCanvasElement>document.getElementById("d");
     var app = new Graph(canvas);
-    document.getElementById("clear").addEventListener("click", (e) => app.clear());
-    document.getElementById("default").addEventListener("click", (e) => app.setMode(Mode.Default));
-    document.getElementById("create").addEventListener("click", (e) => app.setMode(Mode.Create));
+    document.getElementById("clear")?.addEventListener("click", (e) => app.clear());
+    document.getElementById("default")?.addEventListener("click", (e) => app.setMode(Mode.Default));
+    document.getElementById("create")?.addEventListener("click", (e) => app.setMode(Mode.Create));
 }
 
 export class Graph implements ShouldUpdate {
@@ -19,11 +19,11 @@ export class Graph implements ShouldUpdate {
     vertices: Array<Vertex> = []
     edges: Array<Edge> = [];
     connecting: Edge | null = null;
-    selectedVertex: Vertex = null;
+    selectedVertex: Vertex | null = null;
 
     preventClick: boolean = false;
-    dragStartPosition: Position = null;
-    dragging: Vertex = null;
+    dragStartPosition: Position | null = null;
+    dragging: Vertex | null = null;
 
     preventClickTime: number = 0;
     clickDelay: number = 125;
@@ -91,8 +91,10 @@ export class Graph implements ShouldUpdate {
         this.update();
     }
 
-    private handleMode(position: Position) {
+    private handleMode(position: Position) : void {
         let clickedVertex = this.vertexAt(position);
+        if (clickedVertex == null)
+            return;
 
         if (this.mode == Mode.Default) {
             this.selectVertex(clickedVertex);

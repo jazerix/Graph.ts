@@ -14,7 +14,9 @@ export class Edge {
     public draw(context: CanvasRenderingContext2D): void {
         if (this.endPosition() === null)
             return;
-        var endPos: Position = this.endPosition();
+        let endPos = this.endPosition();
+        if (endPos == null)
+            return;
         let angle = Math.atan2(endPos.y - this.start.position.y, endPos.x - this.start.position.x);
 
         context.beginPath();
@@ -28,7 +30,7 @@ export class Edge {
         //this.drawArrow(context, this.start.position.x, this.start.position.y, endPos.x, endPos.y, .5, 20)
     }
 
-    private drawArrow(context: CanvasRenderingContext2D, x1, y1, x2, y2, angle, d) {
+    private drawArrow(context: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number, angle: number, d: number) {
         var lineAngle = Math.atan2(y2 - y1, x2 - x1);
         x1 = x1 + Math.cos(lineAngle) * this.vertexSize;
         y1 = y1 + Math.sin(lineAngle) * this.vertexSize;
@@ -84,7 +86,7 @@ export class Edge {
         return this._end;
     }
 
-    public endVertex() : Vertex | null {
+    public endVertex(): Vertex | null {
         return this._end instanceof Vertex ? this._end : null;
     }
 
