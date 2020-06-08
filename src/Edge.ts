@@ -84,6 +84,10 @@ export class Edge {
         return this._end;
     }
 
+    public endVertex() : Vertex | null {
+        return this._end instanceof Vertex ? this._end : null;
+    }
+
 
     public setEnd(end: Position | Vertex) {
         this._end = end;

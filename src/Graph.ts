@@ -41,7 +41,7 @@ export class Graph implements ShouldUpdate {
                 this.connecting = null;
                 this.update();
             } else if (e.key === "Delete") {
-                console.log("dasdasd");
+                this.deleteSelectedVertex();
             }
 
         });
@@ -130,11 +130,27 @@ export class Graph implements ShouldUpdate {
         this.selectedVertex = vertex;
     }
 
-    private deleteVertex(): void {
+    private deleteSelectedVertex(): void {
         if (this.selectedVertex == null)
             return;
-        for(let edge of this.edges) {
+        let deleteEdges = [];
+        for (let edge of this.edges) {
+            if (edge.start == this.selectedVertex) {
+                deleteEdges.push(edge);
+                continue;
+            }
+            if (edge.endVertex() != null && edge.endVertex() == this.selectedVertex)
+                deleteEdges.push(edge);
+        }
+        this.deleteEdges(deleteEdges);
+    }
 
+    private deleteEdges(edges: Array<Edge>): void {
+        for (let edge of edges) {
+            let index = this.edges.indexOf(edge, 0);
+            if (index <= -1)
+                continue;
+            this.edges.splice(index, 1);
         }
     }
 
