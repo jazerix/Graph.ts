@@ -91,10 +91,9 @@ export class Graph implements ShouldUpdate {
         this.update();
     }
 
-    private handleMode(position: Position) : void {
+    private handleMode(position: Position): void {
         let clickedVertex = this.vertexAt(position);
-        if (clickedVertex == null)
-            return;
+
 
         if (this.mode == Mode.Default) {
             this.selectVertex(clickedVertex);
@@ -106,11 +105,13 @@ export class Graph implements ShouldUpdate {
 
     }
 
-    private createVertices(vertex: Vertex, position: Position): void {
+    private createVertices(vertex: Vertex | null, position: Position): void {
         if (vertex == null && this.connecting == null) {
             this.vertices.push(new Vertex(this, position));
             return;
         }
+        if (vertex == null)
+            return;
         if (this.connecting == null)
             this.connecting = new Edge(vertex);
         else {
@@ -120,7 +121,7 @@ export class Graph implements ShouldUpdate {
         }
     }
 
-    private selectVertex(vertex: Vertex): void {
+    private selectVertex(vertex: Vertex | null): void {
         if (this.selectedVertex != null)
             this.selectedVertex.selected = false;
         if (this.selectedVertex == vertex || vertex == null) {
@@ -145,6 +146,12 @@ export class Graph implements ShouldUpdate {
                 deleteEdges.push(edge);
         }
         this.deleteEdges(deleteEdges);
+        
+        let index = this.vertices.indexOf(this.selectedVertex, 0);
+        if (index > -1)
+            this.vertices.splice(index, 1);
+
+        this.update();
     }
 
     private deleteEdges(edges: Array<Edge>): void {
