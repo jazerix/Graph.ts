@@ -8,7 +8,7 @@
         "type": "firefox",
         "request": "launch",
         "name": "Debug with FireFox",
-        "url": "file:///C:/Users/jazer/code/g/graph.html",
+        "url": "file:///C:/Users/jazer/code/Graph.ts/graph.html",
         "webRoot": "${workspaceFolder}/dist",
         "pathMappings": [
           {

@@ -28,6 +28,7 @@ export class Graph implements ShouldUpdate {
     preventClickTime: number = 0;
     clickDelay: number = 125;
     mode: Mode = Mode.Create;
+    directed: boolean = true;
 
     constructor(canvas: HTMLCanvasElement) {
         this.context = <CanvasRenderingContext2D>canvas.getContext("2d");
@@ -113,7 +114,7 @@ export class Graph implements ShouldUpdate {
         if (vertex == null)
             return;
         if (this.connecting == null)
-            this.connecting = new Edge(vertex);
+            this.connecting = new Edge(vertex, this.directed);
         else {
             this.connecting.setEnd(vertex);
             this.edges.push(this.connecting);
