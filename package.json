@@ -9,5 +9,8 @@
     "build": "webpack --mode production",
     "dev": "webpack --mode development",
     "watch": "webpack --watch --mode development"
+  },
+  "dependencies": {
+    "copy-webpack-plugin": "^6.0.2"
   }
 }
